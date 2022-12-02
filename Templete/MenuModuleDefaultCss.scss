@@ -1,0 +1,22 @@
+﻿padding: 10px 0 10px 0;
+background-color: #4a4c59;
+ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+        font-weight: 500;
+        color: white;
+        font-size: 14px;
+        padding: 5px;
+    }
+
+    li:hover {
+        background-color: #5e6172;
+        cursor: pointer;
+    }
+}
+
+box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.75);
+-webkit-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.75);
+-moz-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.75);
