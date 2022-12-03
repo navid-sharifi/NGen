@@ -1,4 +1,4 @@
-﻿using NGen.Module;
+﻿using NGen.NewModuleStructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;

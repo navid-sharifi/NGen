@@ -1,32 +1,9 @@
 ﻿
-using System.Reflection;
+using NGen.NewModuleStructure;
+
 
 namespace NSharp
 {
-    public static class GloblaVarialbe
-    {
-        public static void SetRoute(System.Type type, string route)
-        {
-            var tpye = alreadyRun.FirstOrDefault(c => c.Type == type.FullName);
-            if (tpye.Type.HasValue())
-            {
-                tpye.Route = route;
-            }
-            else
-            {
-                alreadyRun.Add((type.FullName, route));
-            }
-        }
-
-        public static string GetRoute(System.Type type)
-        {
-            var tpye = alreadyRun.FirstOrDefault(c => c.Type == type.FullName);
-            return tpye.Route;
-        }
-
-
-        public static List<(string Type, string? Route)> alreadyRun = new List<(string Type, string? Route)>();
-    }
 
     public abstract class NPag : NCommon
     {
@@ -53,15 +30,6 @@ namespace NSharp
         {
             this.MenuModule = menuModule;
             return this;
-        }
-
-
-        public static string GetRoute(System.Type type)
-        {
-            var attrs = type.GetCustomAttributes<NRoute>(false);
-            if (attrs.None()) return type.Name;
-            var attr = attrs.First();
-            return attr.Text;
         }
 
 
@@ -115,7 +83,7 @@ namespace NSharp
             //////page
             await ReactPagesBaseDirectory.SubDirectory(ObjectName).WriteFileAsync($"{ObjectName}Page.js", reactPageFile.ToString());
             React.AddPageImportToAppJs(ObjectName);
-            React.AddRouteToAppJs(ObjectName, NPag.GetRoute(this.GetType()));
+            React.AddRouteToAppJs(ObjectName, Page.GetRoute(this.GetType()));
 
             var pagesDirectory = WebSiteBasePath.SubDirectory("Controllers").SubDirectory("Pages");
             controller.Name(ObjectName);
