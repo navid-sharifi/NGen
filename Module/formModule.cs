@@ -1,9 +1,9 @@
-﻿using Domain;
+﻿using NGen;
 using System.Linq.Expressions;
 
 namespace NSharp
 {
-    public abstract class formModule<T> : BaseModule where T : BaseEntity
+    public abstract class formModule<T> : BaseModule where T : class
     {
 
         internal (string PropertyName, string PropertyType, string Param) _GetSource = (string.Empty, string.Empty, string.Empty);

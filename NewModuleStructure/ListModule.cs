@@ -1,18 +1,29 @@
 ﻿using NSharp;
+using RepoDb;
+using System.Linq;
 using System.Linq.Expressions;
 
-namespace NGen.NewModuleStructure
+namespace NGen
 {
     public abstract class ListModule<T> : AModule where T : class
     {
         public override string GetViewModel(Type pageType, Type moduleType)
         {
-            return "// this is view model";
+            return "\t" + IListItem.RenderClass(Columns, ViewModelName(pageType, moduleType) + ":NViewModel");
         }
 
         public override string GetActions(Type pageType, Type moduleType)
         {
-            return "//this is action";
+            this.Actions.Add(("LoadSource", @$"        [HttpPost]
+        [Route(""[action]"")]
+        public async Task<IActionResult> {moduleType.Name + "GetSource"}()
+        {{
+             var rows = await Database.GetList<{typeof(T).FullName}>();
+             return Ok(rows.Select(c => (new {this.ViewModelName(pageType, moduleType)}()).MapFrom(c)));
+        }}"));
+
+            return base.GetActions(pageType, moduleType);
+
         }
 
         public override string GetReactBeforMethod(Type pageType, Type moduleType)
@@ -26,36 +37,43 @@ namespace NGen.NewModuleStructure
             return @$"  <div>
 {ReactButtonHtmls.Select(c => $"\t\t{{/* {c.Name} */}}\n\t\t{c.html}").Join('\n')}
   </div>
-  <table class=""table table-bordered"">
-    <thead>
-      <tr>
-        <th scope=""col"">#</th>
-        <th scope=""col"">First</th>
-        <th scope=""col"">Last</th>
-        <th scope=""col"">Handle</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope=""row"">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr>
-      <tr>
-        <th scope=""row"">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-      </tr>
-    </tbody>
-  </table> ";
+  {{data && Object.keys(data).length > 0 ?
+    (<table class=""table table-bordered"">
+      {{console.log(data)}}
+        <thead>
+          <tr>
+            {Columns.Select(c => $"<th scope=\"col\">{c.HeaderName()}</th>").Join("\n\t\t\t\t\t\t")}
+          </tr>
+        </thead>
+        <tbody>
+      {{data.map((k , i)=> <tr key={{i}}>
+            {Columns.Where(c => c is ListColumn).Select(c => $"<td>{{k.{c.Name().FirstCharToLower()}}}</td>").Join("\n\t\t\t\t\t\t")}
+          </tr> )}}
+        </tbody>
+      </table>): null}}";
 
         }
 
         public override string GetReactImports(Type pageType, Type moduleType)
         {
-            return ReactImport.GroupBy(c => c.Import).Select(c => "{/*" + c.Select(z => z.Name).Join(',') + "*/}\n" + c.Key).Join('\n');
+            ReactImport.Add(("GetSource", "import { NPost } from '../../../Tools/Extentions';"));
+
+            return ReactImport.GroupBy(c => c.Import).Select(c => "//" + c.Select(z => z.Name).Join(',') + "\n" + c.Key).Join('\n');
+        }
+
+        public override string GetReactBody(Type pageType, Type moduleType)
+        {
+            this.ReactBodys.Add(("Get source", @$"const [data , setData] = React.useState({{}});
+  React.useEffect(()=>{{
+          NPost(`{pageType.Name.EnsureStartWith('/')}/{moduleType.Name + "GetSource"}`)
+          .then((res)=>{{
+            if(res){{
+              setData(res)
+            }}
+          }})
+    }} ,[])"));
+
+            return base.GetReactBody(pageType, moduleType);
         }
 
         public override string GetReactPage(Type pageType, Type moduleType)
@@ -71,7 +89,6 @@ namespace NGen.NewModuleStructure
                     ReactImport.Add((button.Name(), button.ReactImports()));
             }
 
-
             return @$"
 import React from 'react';
 {GetReactImports(pageType, moduleType)}
@@ -82,7 +99,7 @@ const {GetReactModuleName(pageType, moduleType)} = () => {{
 
 {GetReactBody(pageType, moduleType)}
 
-    return (
+  return (
 <div>
 {GetReactHTML(pageType, moduleType)} 
 </div>);
@@ -92,10 +109,20 @@ export default {GetReactModuleName(pageType, moduleType)};";
 
         }
 
-        public void Column<U>(Expression<Func<T, U>> expression)
+        private List<IListItem> Columns = new List<IListItem>();
+        public IListItem Column<U>(Expression<Func<T, U>> expression)
         {
             var column = new ListColumn(expression.MemberName(), expression.TypeName());
+            Columns.Add(column);
             Props.Add((expression.TypeName(), expression.MemberName()));
+            return column;
+        }
+
+        public ListItemButton ColumnButton(string name)
+        {
+            var column = new ListItemButton(name);
+            Columns.Add(column);
+            return column;
         }
 
         private List<ListButton> ReactButtons = new List<ListButton>();
@@ -109,11 +136,58 @@ export default {GetReactModuleName(pageType, moduleType)};";
 
     }
 
-    public class ListColumn
+    public interface IListItem
     {
-        public ListColumn(string Name, string type)
-        {}
+        string _name { get; }
+
+        internal virtual string HeaderName()
+        {
+            return _name;
+        }
+        internal virtual string Name()
+        {
+            return _name;
+        }
+        public static string RenderClass(IEnumerable<IListItem> columns, string Name)
+        {
+            var newList = columns.Where(c => c is ListColumn).Select(c => c as ListColumn);
+            return @$"public class {Name}
+    {{
+{"\t\t" + newList.Select(c => c.renderProperty()).Join("\n\t\t")}
+    }}";
+        }
     }
+
+
+    public class ListColumn : IListItem
+    {
+        internal string _type = string.Empty;
+
+        public ListColumn(string Name, string type)
+        {
+            type = type.PlaceIf(type != "String", "string");
+            type = type.PlaceIf(type != "Int32", "int");
+            this._type = type;
+            _name = Name;
+        }
+
+        public string _name { get; private set; }
+
+        internal string renderProperty()
+        {
+            return $"public {_type} {_name} {{ get; set; }}";
+        }
+    }
+
+    public class ListItemButton : ListButton , IListItem
+    {
+        public ListItemButton(string Name) : base(Name)
+        {
+            this._name = Name;
+        }
+        public string _name { get; private set; }
+    }
+
     public class ListButton
     {
         private string _name = string.Empty;
@@ -126,7 +200,7 @@ export default {GetReactModuleName(pageType, moduleType)};";
 
         public void Go<T>() where T : Page
         {
-            _route = NPag.GetRoute(typeof(T)).EnsureStartWith('/');
+            _route = Page.GetRoute(typeof(T)).EnsureStartWith('/');
         }
 
         public string ReactHtml()

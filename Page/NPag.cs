@@ -1,7 +1,4 @@
-﻿
-using NGen.NewModuleStructure;
-
-
+﻿using NGen;
 namespace NSharp
 {
 
@@ -16,7 +13,7 @@ namespace NSharp
 
         public void CheckLogin(string roles = "")
         {
-            this._SecurityAttr = $"[NGate({$"roles:\"{roles}\"".OnlyWhen(roles.HasValue())})]";
+            this._SecurityAttr = $"[Gate({$"roles:\"{roles}\"".OnlyWhen(roles.HasValue())})]";
         }
 
         public NPag CssClass(string @class)

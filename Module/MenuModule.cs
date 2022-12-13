@@ -1,4 +1,6 @@
-﻿namespace NSharp
+﻿using NGen;
+
+namespace NSharp
 {
     public abstract class MenuModule : BaseModule
     {
@@ -24,8 +26,8 @@
             var html = "<div><ul>\n";
             foreach (var item in Pages)
             {
-                await React.AddMenuRouteToAppJs(item.type.Name, NPag.GetRoute(item.type), this.GetType().Name + "Module");
-                html += $"\t<li onClick={{() => navigate('{NPag.GetRoute(item.type).IfEmpty('/' + item.type.Name).EnsureStartWith('/')}')}}>{item.displayName}</li>\n";
+                await React.AddMenuRouteToAppJs(item.type.Name, Page.GetRoute(item.type), this.GetType().Name + "Module");
+                html += $"\t<li onClick={{() => navigate('{Page.GetRoute(item.type).IfEmpty('/' + item.type.Name).EnsureStartWith('/')}')}}>{item.displayName}</li>\n";
             }
 
             html += "</ul></div>";

@@ -1,6 +1,6 @@
 ﻿using NSharp;
 
-namespace NGen.NewModuleStructure
+namespace NGen
 {
     public abstract class AModule
     {
@@ -19,8 +19,12 @@ namespace NGen.NewModuleStructure
 
         #endregion
 
-        public abstract string GetActions(Type pageType, Type moduleType);
+        public virtual string GetActions(Type pageType, Type moduleType) {
+
+            return Actions.Select(c => "//" + c.Name + "\n" + c.Action).Join('\n');
+        }
         public abstract string GetViewModel(Type pageType, Type moduleType);
+        public virtual string ViewModelName(Type pageType, Type moduleType)=> pageType.Name+moduleType.Name+"VM";
         public abstract string GetReactImports(Type pageType, Type moduleType);
 
         public virtual string GetReactBody(Type pageType, Type moduleType)

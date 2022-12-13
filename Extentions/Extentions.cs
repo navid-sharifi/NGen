@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Domain;
 using System.Linq.Expressions;
 
 namespace NSharp
@@ -7,6 +6,7 @@ namespace NSharp
     public static class Extentions
     {
         public static string Join(this IEnumerable<string> @this , char seprator) => string.Join(seprator, @this);
+        public static string Join(this IEnumerable<string> @this , string seprator) => string.Join(seprator, @this);
 
         public static bool HasValue(this Guid? @this)
         {
@@ -53,14 +53,6 @@ namespace NSharp
 
         }
 
-        public static TEntity UpdateFrom<TEntity, TModel>(this TEntity @this, TModel viewModel) where TEntity : BaseEntity where TModel : class
-        {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<TModel , TEntity>());
-
-            var mapper = new Mapper(config);
-            return mapper.Map(viewModel, @this);
-
-        }
 
 
         public static string EnsureStartWith(this string @this  , char target)

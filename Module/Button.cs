@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using NGen;
+using System.Linq.Expressions;
 
 namespace NSharp
 {
@@ -48,7 +49,7 @@ namespace NSharp
 
         public virtual Button Go<TPage>() where TPage : NPag, new()
         {
-            _Go = NPag.GetRoute(typeof(TPage));
+            _Go = Page.GetRoute(typeof(TPage));
 
             if (_Go.None())
                 _Go = typeof(TPage).Name;
