@@ -6,9 +6,8 @@ namespace NGen;
 public abstract class Page : NCommon
 {
     internal List<AModule> Modules = new List<AModule>();
-    string _securityAttr = string.Empty;
+    
     string _class { get; set; }
-
 
     public void Add<T>() where T : AModule => Modules.Add(Activator.CreateInstance<T>());
 
@@ -18,8 +17,8 @@ public abstract class Page : NCommon
         #region Controller
 
         var template = TemplatesDirectory.ReadFile("Controller.cs");
-        if (_securityAttr.HasValue())
-            template = template.InsertBefor("public class", _securityAttr + "\n\t");
+        if (_SecurityAttr.HasValue())
+            template = template.InsertBefor("public class", _SecurityAttr + "\n\t");
         var controller = template.AsController();
 
         controller.Name(Page.Name);
@@ -53,6 +52,12 @@ public abstract class Page : NCommon
         #endregion
     }
 
+    public void CheckLogin(string roles = "")
+    {
+        this._SecurityAttr = $"[Gate({$"roles:\"{roles}\"".OnlyWhen(roles.HasValue())})]";
+    }
+
+    private string _SecurityAttr = String.Empty;
 
     public static string GetRoute(System.Type type)
     {

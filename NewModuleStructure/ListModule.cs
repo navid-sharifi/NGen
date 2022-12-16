@@ -47,7 +47,8 @@ namespace NGen
         </thead>
         <tbody>
       {{data.map((k , i)=> <tr key={{i}}>
-            {Columns.Where(c => c is ListColumn).Select(c => $"<td>{{k.{c.Name().FirstCharToLower()}}}</td>").Join("\n\t\t\t\t\t\t")}
+            {Columns.Select(c=> c is ListColumn ? $"<td>{{k.{c.Name().FirstCharToLower()}}}</td>" :
+                                c is ListItemButton ? $"<td>{((ListItemButton)c).ReactHtml()}</td>" : "").Join("\n\t\t\t\t\t\t")}
           </tr> )}}
         </tbody>
       </table>): null}}";
@@ -57,6 +58,12 @@ namespace NGen
         public override string GetReactImports(Type pageType, Type moduleType)
         {
             ReactImport.Add(("GetSource", "import { NPost } from '../../../Tools/Extentions';"));
+
+
+            var listItemButtonImport = Columns.Where(c => c is ListItemButton).Select(c => c as ListItemButton).Where(c => c.ReactImports().HasValue()).Select(c => (c.Name(), c.ReactImports()));
+            if (listItemButtonImport.Any())
+                ReactImport.AddRange(listItemButtonImport);
+
 
             return ReactImport.GroupBy(c => c.Import).Select(c => "//" + c.Select(z => z.Name).Join(',') + "\n" + c.Key).Join('\n');
         }
@@ -72,6 +79,12 @@ namespace NGen
             }}
           }})
     }} ,[])"));
+
+
+            var listItemButtonReactBody = Columns.Where(c => c is ListItemButton).Select(c => c as ListItemButton).Where(c => c.ReactBody().HasValue()).Select(c => (c.Name(), c.ReactBody()));
+            if (listItemButtonReactBody.Any())
+                ReactBodys.AddRange(listItemButtonReactBody);
+
 
             return base.GetReactBody(pageType, moduleType);
         }
@@ -179,12 +192,21 @@ export default {GetReactModuleName(pageType, moduleType)};";
         }
     }
 
-    public class ListItemButton : ListButton , IListItem
+    public class ListItemButton : ListButton, IListItem
     {
         public ListItemButton(string Name) : base(Name)
         {
             this._name = Name;
         }
+
+        public ListItemButton Edit<T>() where T : Page
+        {
+            _route = Page.GetRoute(typeof(T)).EnsureStartWith('/').TrimEnd('/')+ "?item=${k.id}";
+            return this;
+        }
+
+
+
         public string _name { get; private set; }
     }
 
@@ -196,7 +218,7 @@ export default {GetReactModuleName(pageType, moduleType)};";
             _name = Name;
         }
 
-        private string _route = string.Empty;
+        protected string _route = string.Empty;
 
         public void Go<T>() where T : Page
         {

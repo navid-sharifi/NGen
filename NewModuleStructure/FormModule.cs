@@ -16,6 +16,16 @@ namespace NGen
                     Actions.Add((button.Name(), button.Actions(pageType, moduleType, typeof(T), ViewModelName(pageType, moduleType))));
             }
 
+            Actions.Add(("data source", $@"
+
+        [HttpPost]
+        [Route(""[action]/{{Id?}}"")]
+        public async Task<IActionResult> {moduleType.Name}Source({"System.Guid"}? {"Id"})
+        {{
+            var rows =  await Database.QueryAsync<{typeof(T).FullName}>(c=>c.{"Id"} == {"Id"});
+            return Ok(rows.FirstOrDefault());
+        }}"));
+
             return Actions.Select(c => "//" + c.Name + "\n" + c.Action).Join('\n');
         }
 
@@ -31,7 +41,27 @@ namespace NGen
 
         public override string GetReactImports(Type pageType, Type moduleType)
         {
+            this.ReactImport.Add(("", "import { GetParam } from '../../../Tools/Url';"));
+            this.ReactImport.Add(("", "import { NPost } from '../../../Tools/Extentions';"));
+
             return ReactImport.GroupBy(c => c.Import).Select(c => "//" + c.Select(z => z.Name).Join(',') + "\n" + c.Key).Join('\n');
+        }
+
+        public override string GetReactBody(Type pageType, Type moduleType)
+        {
+            ReactBodys.Add(("load data", $@"
+    React.useEffect(()=>{{
+        if(GetParam('item')){{
+          NPost(`{pageType.Name.EnsureStartWith('/')}/{moduleType.Name}Source/${{GetParam('item')}}`)
+          .then((res)=>{{
+            if(res){{
+              SetForm(res)
+            }}
+          }})
+        }}
+    }} ,[]);
+"));
+            return base.GetReactBody(pageType, moduleType);
         }
 
 
@@ -65,7 +95,7 @@ import React from 'react';
 
 const {GetReactModuleName(pageType, moduleType)} = () => {{
     
-    const [formState, SetForm] = React.useState({{}});
+    const [form, SetForm] = React.useState({{}});
 
 {GetReactBody(pageType, moduleType)}
 
@@ -132,6 +162,7 @@ export default {GetReactModuleName(pageType, moduleType)};";
         <label>{_name}</label>
         <input  
             onChange={{(e) => SetForm( (f) =>{{return {{...f, ['{_name.FirstCharToLower()}']: e.target.value}}; }}) }}
+            value={{form.{_name.FirstCharToLower()}}}
             class=""form-control"" placeholder=""{_name}"" />
     </div>";
 
@@ -141,8 +172,9 @@ export default {GetReactModuleName(pageType, moduleType)};";
                 return @$"    <div class=""form-group"">
         <label>{_name}</label>
         <input
-        onChange={{(e) => SetForm( (f) =>{{return {{...f, ['{_name.FirstCharToLower()}']: e.target.value}}; }}) }}
-        type=""number"" class=""form-control"" placeholder=""{_name}"" />
+          value={{form.{_name.FirstCharToLower()}}}
+          onChange={{(e) => SetForm( (f) =>{{return {{...f, ['{_name.FirstCharToLower()}']: e.target.value}}; }}) }}
+          type=""number"" class=""form-control"" placeholder=""{_name}"" />
     </div>";
 
             //////////////////////////////////////////////
@@ -160,11 +192,16 @@ export default {GetReactModuleName(pageType, moduleType)};";
         }
     }
 
-    public class FormModuleButton
+    public class FormModuleButton : IFormModuleButtonSave
     {
         private string _name = string.Empty;
         private string _route = string.Empty;
         private bool _save;
+        private bool _onClick;
+
+
+        internal List<string> _onClickActionCodes = new List<string>();
+        internal List<string> _reactImports = new List<string>();
 
         public FormModuleButton(string Name)
         {
@@ -176,13 +213,31 @@ export default {GetReactModuleName(pageType, moduleType)};";
             _route = Page.GetRoute(typeof(T)).EnsureStartWith('/');
         }
 
-        public string ReactHtml()
+        internal string ReactHtml()
         {
-            return $"<button type=\"button\" class=\"btn btn-primary\"{$" onClick={{()=>navigate(`{_route}`)}}".OnlyWhen(_route.HasValue() && !_save)} " +
-                $"{$"onClick={{(e)=> {Name()}(e)}}".OnlyWhen(_save)} >{_name}</button>";
+            if (_save)
+            {
+                return $"<button type=\"button\" class=\"btn btn-primary\" " +
+                $"{$"onClick={{(e)=> {Name()}(e)}}"}>{_name}</button>";
+            }
+
+            if (_onClick)
+            {
+                return $"<button type=\"button\" class=\"btn btn-primary\" " +
+                $"{$"onClick={{(e)=> {Name()}(e)}}"}>{_name}</button>";
+            }
+
+            if (_route.HasValue())
+            {
+                return $"<button type=\"button\" class=\"btn btn-primary\"{$" onClick={{()=>navigate(`{_route}`)}}"} " +
+               $">{_name}</button>";
+            }
+
+            return $"<button type=\"button\" class=\"btn btn-primary\">{_name}</button>";
+
         }
 
-        public List<string> ReactBody(Type pageType, Type moduleType)
+        internal List<string> ReactBody(Type pageType, Type moduleType)
         {
             var list = new List<string>();
 
@@ -194,9 +249,19 @@ export default {GetReactModuleName(pageType, moduleType)};";
             if (_save)
             {
                 list.Add($@"const {_name} = (event) => {{
-        NPostData('/{pageType.Name}/{moduleType.Name + _name}', formState)
+        NPostData('/{pageType.Name}/{moduleType.Name + _name}', form)
             .then(function (response) {{
                 {$"navigate('{_route}');".OnlyWhen(_route.HasValue())}
+            }})
+    }}");
+            }
+
+            if (_onClick)
+            {
+                list.Add($@"const {_name} = (event) => {{
+        NPostData('/{pageType.Name}/{moduleType.Name + _name}', form)
+            .then(function (response) {{
+                
             }})
     }}");
             }
@@ -204,29 +269,27 @@ export default {GetReactModuleName(pageType, moduleType)};";
             return list;
         }
 
-        public string ReactBeforMethod()
+        internal string ReactBeforMethod()
         {
             return $"<button type=\"button\" class=\"btn btn-primary\">{_name}</button>";
         }
 
-        public List<string> ReactImports()
+        internal List<string> ReactImports()
         {
-            var list = new List<string>();
-
-            if (_save)
+            if (_save || _onClick)
             {
-                list.Add("import { NPostData } from '../../../Tools/Extentions';");
+                _reactImports.Add("import { NPostData } from '../../../Tools/Extentions';");
             }
 
             if (_route.HasValue())
             {
-                list.Add("import { useNavigate } from \"react-router-dom\";");
+                _reactImports.Add("import { useNavigate } from \"react-router-dom\";");
             }
 
-            return list;
+            return _reactImports;
         }
 
-        public string Actions(Type pageType, Type moduleType, Type entity, string viewModel)
+        internal string Actions(Type pageType, Type moduleType, Type entity, string viewModel)
         {
             string action = string.Empty;
 
@@ -253,16 +316,41 @@ export default {GetReactModuleName(pageType, moduleType)};";
             ";
             }
 
+            if (_onClick)
+            {
+                action += @$"
+        [HttpPost]
+        [Route(""[action]"")]
+        public async Task<IActionResult> {moduleType.Name + Name()}({viewModel} data)
+        {{
+            {_onClickActionCodes.Join('\n').Replace("\n" , "\n\t\t\t")}
+            return Ok();
+        }}
+            ";
+            }
+
+
             return action;
         }
 
 
+
+        public void OnClick(Action<FormModuleButtonOnClick> actions)
+        {
+            var OnClickObj = new FormModuleButtonOnClick(this);
+
+            actions.Invoke(OnClickObj);
+
+            if (OnClickObj._onClick_HaveCodeBlock)
+                _onClickActionCodes.Add("}");
+            _onClick = true;
+        }
         internal string Name()
         {
             return _name;
         }
 
-        public FormModuleButton Save()
+        public IFormModuleButtonSave Save()
         {
             _save = true;
             return this;
@@ -270,4 +358,56 @@ export default {GetReactModuleName(pageType, moduleType)};";
 
     }
 
+    public interface IFormModuleButtonSave
+    {
+        IFormModuleButtonSave Save();
+        void Go<T>() where T : Page;
+    }
+
+    public class FormModuleButtonOnClick : IFormModuleButtonOnClickIf
+    {
+        internal bool _onClick_HaveCodeBlock;
+        private FormModuleButton Button;
+
+        public FormModuleButtonOnClick(FormModuleButton FormModuleButton)
+        {
+            Button = FormModuleButton;
+        }
+        public IFormModuleButtonOnClickStepTwo Csharp(string code)
+        {
+            Button._onClickActionCodes.Add("\t".OnlyWhen(_onClick_HaveCodeBlock) +code);
+            return this;
+        }
+
+        public void EndIf()
+        {
+            Button._onClickActionCodes.Add("}");
+            _onClick_HaveCodeBlock = false;
+        }
+
+        public IFormModuleButtonOnClickStepTwo If(string condition)
+        {
+            _onClick_HaveCodeBlock = true;
+            Button._onClickActionCodes.Add($"if({condition}){{");
+            return this;
+        }
+        public IFormModuleButtonOnClickStepTwo ReturnToastMessage(string message)
+        {
+            Button._onClickActionCodes.Add("\t".OnlyWhen(_onClick_HaveCodeBlock) + $"return Ok(\"{message}\");");
+            return this;
+        }
+    }
+
+    public interface IFormModuleButtonOnClickIf : IFormModuleButtonOnClickStepTwo
+    {
+        IFormModuleButtonOnClickStepTwo If(string condition);
+        void EndIf();
+
+    }
+
+    public interface IFormModuleButtonOnClickStepTwo
+    {
+        IFormModuleButtonOnClickStepTwo Csharp(string code);
+        IFormModuleButtonOnClickStepTwo ReturnToastMessage(string code);
+    }
 }
