@@ -1,6 +1,4 @@
 ﻿using NSharp;
-using RepoDb;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace NGen
@@ -18,7 +16,8 @@ namespace NGen
         [Route(""[action]"")]
         public async Task<IActionResult> {moduleType.Name + "GetSource"}()
         {{
-             var rows = await Database.GetList<{typeof(T).FullName}>();
+             {$"var rows = await Database.GetList<{typeof(T).FullName}>();".OnlyWhen(sourceInclude is null)}
+             {$"var rows = await Database.Of<{typeof(T).FullName}>().GetList(c=>c.{sourceInclude?.Name});".OnlyWhen(sourceInclude != null)}
              return Ok(rows.Select(c => (new {this.ViewModelName(pageType, moduleType)}()).MapFrom(c)));
         }}"));
 
@@ -131,7 +130,13 @@ export default {GetReactModuleName(pageType, moduleType)};";
             return column;
         }
 
-        public ListItemButton ColumnButton(string name)
+        private Type sourceInclude;
+		public void SourceInclude<U>(Expression<Func<T, U>> expression) where U : BaseEntity
+		{
+            sourceInclude = expression.ReturnType;
+		}
+
+		public ListItemButton ColumnButton(string name)
         {
             var column = new ListItemButton(name);
             Columns.Add(column);
@@ -213,7 +218,8 @@ export default {GetReactModuleName(pageType, moduleType)};";
     public class ListButton
     {
         private string _name = string.Empty;
-        public ListButton(string Name)
+        private string css = "btn-primary ";
+		public ListButton(string Name)
         {
             _name = Name;
         }
@@ -225,10 +231,18 @@ export default {GetReactModuleName(pageType, moduleType)};";
             _route = Page.GetRoute(typeof(T)).EnsureStartWith('/');
         }
 
-        public string ReactHtml()
+        public ListButton ClassName(string className)
         {
-            return $"<button type=\"button\" class=\"btn btn-primary\"{$" onClick={{()=>navigate(`{_route}`)}}".OnlyWhen(_route.HasValue())}>{_name}</button>";
+            css += className;
+            return this;
+		}
+
+
+		public string ReactHtml()
+        {
+            return $"<button type=\"button\" class=\"btn {css}\"{$" onClick={{()=>navigate(`{_route}`)}}".OnlyWhen(_route.HasValue())}>{_name}</button>";
         }
+
         public string ReactBody()
         {
             return $"let navigate = useNavigate();".OnlyWhen(_route.HasValue());

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NSharp
+namespace NGen
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class NRoute : Attribute
@@ -16,4 +16,5 @@ namespace NSharp
         public string Text { get; set; }
         
     }
+   
 }
