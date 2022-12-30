@@ -32,7 +32,7 @@ namespace NGen
         [Route(""[action]/{{Id?}}"")]
         public async Task<IActionResult> {moduleType.Name}Source({"System.Guid"}? {"Id"})
         {{
-            var rows =  await Database.QueryAsync<{typeof(T).FullName}>(c=>c.{"Id"} == {"Id"});
+            var rows =  await Database.GetListAsync<{typeof(T).FullName}>(c=>c.{"Id"} == {"Id"});
             return Ok(rows.FirstOrDefault());
         }}"));
 
@@ -247,7 +247,7 @@ export default {GetReactModuleName(pageType, moduleType)};";
 
 		internal string Action(Type pageType, Type moduleType, string viewModel)
 		{
-
+			
 			if (PropertyType?.BaseType?.Name == nameof(BaseEntity))
 			{
 				return $@"
@@ -255,7 +255,7 @@ export default {GetReactModuleName(pageType, moduleType)};";
         [Route(""[action]"")]
         public async Task<IActionResult> {moduleType.Name}{_name}Source()
         {{
-            var rows =  await Database.GetList<{PropertyType.FullName}>();
+            var rows =  await Database.Of<{PropertyType.FullName}>().GetListAsync();
             return Ok(rows.Select(c => new {{value = c.Id,name = c.ToString()}}));
         }}";
 			}
@@ -410,7 +410,7 @@ export default {GetReactModuleName(pageType, moduleType)};";
 
             if (data.Id.HasValue())
             {{
-                var item = await Database.FirstOrDefaultAsync<{entity.FullName}>(c => c.Id == data.Id);
+                var item = await Database.Of<{entity.FullName}>().FirstOrDefaultAsync(c => c.Id == data.Id);
                 if (item == null) return NotFound();
                 item = item?.UpdateFrom(data);
                 await Database.UpdateAsync(item);

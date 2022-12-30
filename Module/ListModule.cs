@@ -129,7 +129,7 @@ namespace NSharp
         [Route(""[action]"")]
         public async Task<IActionResult> {moduleType.Name}{pageType.Name}Source()
         {{
-            var data =  await Database.GetList<{entityType.FullName}>();
+            var data =  await Database.Of<{entityType.FullName}>().GetListAsync();
             return Ok(data);
         }}
             ";

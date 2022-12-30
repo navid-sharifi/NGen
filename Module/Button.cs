@@ -70,7 +70,7 @@ namespace NSharp
 
             if (data.Id.HasValue())
             {{
-                var item = await Database.FirstOrDefaultAsync<{entityType.FullName}>(c => c.Id == data.Id);
+                var item = await Database.Of<{entityType.FullName}>().FirstOrDefaultAsync(c => c.Id == data.Id);
                 if (item == null) return NotFound();
                 item = item?.UpdateFrom(data);
                 await Database.UpdateAsync(item);

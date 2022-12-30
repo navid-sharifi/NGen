@@ -16,8 +16,8 @@ namespace NGen
         [Route(""[action]"")]
         public async Task<IActionResult> {moduleType.Name + "GetSource"}()
         {{
-             {$"var rows = await Database.GetList<{typeof(T).FullName}>();".OnlyWhen(sourceInclude is null)}
-             {$"var rows = await Database.Of<{typeof(T).FullName}>().GetList(c=>c.{sourceInclude?.Name});".OnlyWhen(sourceInclude != null)}
+             {$"var rows = await Database.Of<{typeof(T).FullName}>().GetListAsync();".OnlyWhen(sourceInclude is null)}
+             {$"var rows = await Database.Of<{typeof(T).FullName}>().GetListAsync();".OnlyWhen(sourceInclude != null)}
              return Ok(rows.Select(c => (new {this.ViewModelName(pageType, moduleType)}()).MapFrom(c)));
         }}"));
 

@@ -50,7 +50,7 @@ namespace NSharp
         [Route(""[action]/{{{_GetSource.Param}?}}"")]
         public async Task<IActionResult> {pageType.Name}{moduleType.Name}Source({_GetSource.PropertyType}? {_GetSource.PropertyName})
         {{
-            var rows =  await Database.QueryAsync<{typeof(T).FullName}>(c=>c.{_GetSource.Param} == {_GetSource.Param});
+            var rows =  await Database.GetListAsync<{typeof(T).FullName}>(c=>c.{_GetSource.Param} == {_GetSource.Param});
             return Ok(rows.FirstOrDefault());
         }}
                 ";
