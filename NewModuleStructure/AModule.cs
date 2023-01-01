@@ -2,7 +2,7 @@
 
 namespace NGen
 {
-    public abstract class AModule
+	public abstract class AModule
     {
 
         #region Backend
