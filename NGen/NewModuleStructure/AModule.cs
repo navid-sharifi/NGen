@@ -24,25 +24,28 @@ namespace NGen
 
             return Actions.Select(c => "//" + c.Name + "\n" + c.Action).Join('\n');
         }
-        public abstract string GetViewModel(Type pageType, Type moduleType);
+        
+        public virtual string GetViewModel(Type pageType, Type moduleType) => string.Empty;
+        
         public virtual string ViewModelName(Type pageType, Type moduleType)=> pageType.Name+moduleType.Name+"VM";
-        public abstract string GetReactImports(Type pageType, Type moduleType);
-
+        
+        public virtual string GetReactImports(Type pageType, Type moduleType) => string.Empty;
+    
         public virtual string GetReactBody(Type pageType, Type moduleType)
         {
             return @$"{ReactBodys.GroupBy(c => c.Method).Select(c => $"\t{{/* {c.Select(c => c.Name).Join(',')} */}}\n\t{c.Key}").Join('\n')}";
         }
 
-        public abstract string GetReactHTML(Type pageType, Type moduleType);
-        public abstract string GetReactBeforMethod(Type pageType, Type moduleType);
+        public virtual string GetReactHTML(Type pageType, Type moduleType) => string.Empty;
+        
+        public virtual string GetReactBeforMethod(Type pageType, Type moduleType) => string.Empty;
+        
         public abstract string GetReactPage(Type pageType, Type moduleType);
 
         public virtual (string fileName, string content) GetReactCssFile(Type pageType, Type moduleType)
         {
             return (null, null);
         }
-
-
 
         public virtual string GetReactModuleName(Type pageType, Type moduleType) => moduleType.Name + "Module";
 
