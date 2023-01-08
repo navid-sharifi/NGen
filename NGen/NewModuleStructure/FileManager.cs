@@ -6,7 +6,11 @@
 		{
 			return @$"
 import React from 'react';
-
+import React from ""react"";
+import Button from ""react-bootstrap/Button"";
+import Modal from ""react-bootstrap/Modal"";
+import {{ NPostData }} from ""../../../Tools/Extentions"";
+import ""./FileManagerModule.scss"";
 
 const {GetReactModuleName(pageType, moduleType)} = () => {{
 
@@ -19,6 +23,7 @@ const {GetReactModuleName(pageType, moduleType)} = () => {{
 export default {GetReactModuleName(pageType, moduleType)};";
 
 		}
+
 
 		public override string GetViewModel(Type pageType, Type moduleType)
 		{

@@ -17,6 +17,7 @@ namespace NGen
         private protected List<(string Name, string Method)> ReactBeforMethod = new List<(string Name, string Method)>();
         private protected List<(string Name, string html)> ReactButtonHtmls = new List<(string Name, string html)>();
 
+
         #endregion
 
         public virtual string GetActions(Type pageType, Type moduleType) {
@@ -35,6 +36,14 @@ namespace NGen
         public abstract string GetReactHTML(Type pageType, Type moduleType);
         public abstract string GetReactBeforMethod(Type pageType, Type moduleType);
         public abstract string GetReactPage(Type pageType, Type moduleType);
+
+        public virtual (string fileName, string content) GetReactCssFile(Type pageType, Type moduleType)
+        {
+            return (null, null);
+        }
+
+
+
         public virtual string GetReactModuleName(Type pageType, Type moduleType) => moduleType.Name + "Module";
 
     }
