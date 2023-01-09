@@ -16,8 +16,6 @@ jobs:
     runs-on: windows-2019
 
     steps:
-    - uses: actions/checkout@v3
-
     - name: Publish NGet NuGet Package
       uses: actions/checkout@v3
       with:
