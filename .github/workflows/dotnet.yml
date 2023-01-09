@@ -19,8 +19,8 @@ jobs:
     - name: Publish NGet NuGet Package
       uses: brandedoutcast/publish-nuget@master
       with:
-        PROJECT_FILE_PATH: NGen/NGen.csproj
-        NUGET_KEY: ${{secrets.NUGET_KEY}}
+        repository: NGen/NGen.csproj
+        token: ${{secrets.NUGET_KEY}}
 
 
     # - name: Publish NGen.Website NuGet Package
