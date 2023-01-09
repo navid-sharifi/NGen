@@ -24,10 +24,6 @@ namespace NSharp
 			await GetEnumerableOfTypeTwo<MenuModule, T>();
 
 			GetEnumerableOfTypeThree<Page, T>();
-
-
-			//await GetEnumerableOfType<NModel, T>();
-
 		}
 
 		public static async Task GetEnumerableOfType<T, TGetAssembly>() where T : NCommon
