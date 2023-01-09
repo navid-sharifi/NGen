@@ -1,33 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<AssemblyVersion>1.0.9</AssemblyVersion>
+		<FileVersion>1.0.9</FileVersion>
+		<Version>1.0.9</Version>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	  <AssemblyVersion>1.0.9</AssemblyVersion>
-	  <FileVersion>1.0.9</FileVersion>
-	  <Version>1.0.9</Version>
-  </PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="FileManager\Controller.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="FileManager\Controller.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="FileManager\Controller.cs">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="FileManager\Controller.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\NGen\NGen.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NGen\NGen.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="FileManager\FileManager.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="FileManager\FileManager.js">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
