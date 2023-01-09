@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="FileManager\Controller.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="FileManager\Controller.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NGen" Version="1.0.3" />
   </ItemGroup>
 
