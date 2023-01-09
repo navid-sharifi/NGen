@@ -19,8 +19,8 @@ jobs:
     - name: Publish NGet NuGet Package
       uses: actions/checkout@master
       with:
-        PROJECT_FILE_PATH: NGen/NGen.csproj
-        NUGET_KEY: ${{secrets.NUGET_KEY}}
+        path: NGen/NGen.csproj
+        token: ${{secrets.NUGET_KEY}}
 
 
     # - name: Publish NGen.Website NuGet Package
