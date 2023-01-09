@@ -16,6 +16,9 @@ jobs:
     runs-on: windows-2019
 
     steps:
+    - uses: actions/checkout@v2
+    
+    
     - name: Publish NGet NuGet Package
       uses: brandedoutcast/publish-nuget@master
       with:
