@@ -9,9 +9,9 @@ on:
 
 jobs:
  build:
-#    strategy:
-#      matrix:
-#        configuration: [Release]
+    strategy:
+      matrix:
+        configuration: [Release]
         
     runs-on: windows-2019
 
@@ -19,7 +19,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Publish NGet NuGet Package
-      uses: brandedoutcast/publish-nuget@v2
+      uses: brandedoutcast/checkout@v3
       with:
         PROJECT_FILE_PATH: NGen/NGen.csproj
         NUGET_KEY: ${{secrets.NUGET_KEY}}
