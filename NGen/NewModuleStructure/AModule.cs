@@ -1,8 +1,12 @@
-﻿using NSharp;
-
-namespace NGen
+﻿namespace NGen
 {
-	public abstract class AModule
+    public interface IndependentModule
+    {
+        (string name, string content) Controller();
+        (string name, string content) ReactModule();
+    }
+
+    public abstract class AModule
     {
 
         #region Backend

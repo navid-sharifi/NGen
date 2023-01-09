@@ -1,13 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
+using NGen;
 
-namespace NGen.FileManager.FileManager
+namespace Website.Controllers
 {
-    public class Controller
+    [ApiController]
+    public partial class PublicController : SharedController
     {
+        [HttpGet]
+        [Route("download/{random}/{id}")]
+        public async Task<IActionResult> Index(Guid random, Guid id)
+        {
+            var file = await Database.Of<NGen.File>().FirstOrDefaultAsync(c => c.RandomPath == random && c.Id == id);
+            if (file is null)
+                return NotFound("not found");
 
+            return File(file.Source, file.Type, file.Name);
+        }
     }
 }

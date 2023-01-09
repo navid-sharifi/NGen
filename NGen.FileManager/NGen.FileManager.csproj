@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NGen" Version="1.0.3" />
+    <ProjectReference Include="..\NGen\NGen.csproj" />
   </ItemGroup>
 
   <ItemGroup>

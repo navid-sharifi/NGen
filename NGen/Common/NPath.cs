@@ -1,5 +1,4 @@
-﻿
-namespace NSharp
+﻿namespace NGen
 {
     public class NPath
     {
