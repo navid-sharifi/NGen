@@ -16,6 +16,9 @@ jobs:
     runs-on: windows-2019
 
     steps:
+    - uses: actions/checkout@master
+    
+    
     - name: Publish NGet NuGet Package
       uses: brandedoutcast/publish-nuget@master
       with:
@@ -23,15 +26,15 @@ jobs:
         NUGET_KEY: ${{secrets.NUGET_KEY}}
 
 
-    # - name: Publish NGen.Website NuGet Package
-    #   uses: actions/checkout@master
-    #   with:
-    #     PROJECT_FILE_PATH: NGen.Website/NGen.Website.csproj
-    #     NUGET_KEY: ${{secrets.NUGET_KEY}}
+    - name: Publish NGen.Website NuGet Package
+      uses: brandedoutcast/publish-nuget@master
+      with:
+        PROJECT_FILE_PATH: NGen.Website/NGen.Website.csproj
+        NUGET_KEY: ${{secrets.NUGET_KEY}}
         
 
-    # - name: Publish NGen.FileManager NuGet Package
-    #   uses: actions/checkout@master
-    #   with:
-    #     PROJECT_FILE_PATH: NGen.FileManager/NGen.FileManager.csproj
-    #     NUGET_KEY: ${{secrets.NUGET_KEY}}
+    - name: Publish NGen.FileManager NuGet Package
+      uses: brandedoutcast/publish-nuget@master
+      with:
+        PROJECT_FILE_PATH: NGen.FileManager/NGen.FileManager.csproj
+        NUGET_KEY: ${{secrets.NUGET_KEY}}
