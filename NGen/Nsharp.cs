@@ -44,8 +44,8 @@ namespace NSharp
                         var controller = independentModule.Controller();
 
                         if (controller.name.HasValue())
-
                             NCommon.WebSiteBasePath.SubDirectory("Controllers").SubDirectory("Pages").EnsureExsit().SubDirectory("IndependentPages").EnsureExsit().WriteFile(independentModule.Controller().name, independentModule.Controller().content);
+
 
 
                     }

@@ -1,4 +1,5 @@
-﻿using System.Transactions;
+﻿using NSharp;
+using System.Transactions;
 
 namespace NGen
 {
@@ -6,7 +7,8 @@ namespace NGen
     {
         public (string name, string content) Controller()
         {
-            throw new NotImplementedException();
+          var content =  NPath.GetBaseDirectory().SubDirectory("FileManager").ReadFile("Controller.cs");
+            return ("FileManager.cs", content);
         }
 
         public override string GetReactPage(Type pageType, Type moduleType)
