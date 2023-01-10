@@ -4,6 +4,7 @@
     {
         (string name, string content) Controller();
         (string name, string content) ReactModule();
+        (string name, string content) ReactCssFile();
     }
 
     public abstract class AModule

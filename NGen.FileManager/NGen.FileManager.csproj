@@ -27,6 +27,9 @@
 		<None Update="FileManager\FileManager.js">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="FileManager\FileManagerModule.scss">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 </Project>

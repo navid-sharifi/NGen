@@ -41,11 +41,19 @@ namespace NSharp
                     foreach (var type in types)
                     {
                         var independentModule = (IIndependentModule)Activator.CreateInstance(type);
+
                         var controller = independentModule.Controller();
-
                         if (controller.name.HasValue())
-                            NCommon.WebSiteBasePath.SubDirectory("Controllers").SubDirectory("Pages").EnsureExsit().SubDirectory("IndependentPages").EnsureExsit().WriteFile(independentModule.Controller().name, independentModule.Controller().content);
+                            NCommon.WebSiteBasePath.SubDirectory("Controllers").SubDirectory("Pages").EnsureExsit().SubDirectory("IndependentPages").EnsureExsit().WriteFile(controller.name, controller.content);
 
+                        var reactModule = independentModule.ReactModule();
+                        if (reactModule.name.HasValue())
+                            NCommon.ReactPagesBaseDirectory.EnsureExsit().SubDirectory("IndependentModules").EnsureExsit().WriteFile(reactModule.name, reactModule.content);
+
+                        
+                        var ReactCssFile = independentModule.ReactCssFile();
+                        if (ReactCssFile.name.HasValue())
+                            NCommon.ReactPagesBaseDirectory.EnsureExsit().SubDirectory("IndependentModules").EnsureExsit().WriteFile(ReactCssFile.name, ReactCssFile.content);
 
 
                     }
