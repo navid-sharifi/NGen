@@ -2,7 +2,7 @@
 
 namespace NGen
 {
-    public class FileManager : AModule , IndependentModule
+    public class FileManager : AModule , IIndependentModule
     {
         public (string name, string content) Controller()
         {

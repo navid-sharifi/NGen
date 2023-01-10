@@ -1,6 +1,6 @@
 ﻿namespace NGen
 {
-    public interface IndependentModule
+    public interface IIndependentModule
     {
         (string name, string content) Controller();
         (string name, string content) ReactModule();
