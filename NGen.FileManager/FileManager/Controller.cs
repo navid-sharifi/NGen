@@ -1,31 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Domain;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NGen;
 
 namespace Website.Controllers
 {
-    [ApiController]
     public partial class PublicController : SharedController
     {
         [HttpGet]
         [Route("download/{random}/{id}")]
         public async Task<IActionResult> Index(Guid random, Guid id)
         {
-            var file = await Database.Of<NGen.File>().FirstOrDefaultAsync(c => c.RandomPath == random && c.Id == id);
+            var file = await Database.Of<FileManagerFile>().FirstOrDefaultAsync(c => c.RandomPath == random && c.Id == id);
             if (file is null)
                 return NotFound("not found");
 
             return File(file.Source, file.Type, file.Name);
         }
+
         [HttpPost]
         [Route("[action]")]
         public async Task<IActionResult> FileManagerAddFolder(AddPostFileManagerAddNewFolderVM data)
         {
-            var alreadyFolderExist = await Database.Of<Folder>().Table.AnyAsync(c => c.Name == data.Name.Trim());
+            var alreadyFolderExist = await Database.Of<FileManagerFolder>().Table.AnyAsync(c => c.Name == data.Name.Trim());
 
             if (alreadyFolderExist)
                 return BadRequest("this folder already exist.");
 
-            await Database.Of<Folder>().InsertAsync(new Folder
+            await Database.Of<FileManagerFolder>().InsertAsync(new FileManagerFolder
             {
                 Name = data.Name,
                 CreateDateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
@@ -41,7 +43,7 @@ namespace Website.Controllers
         [Route("[action]")]
         public async Task<IActionResult> FileManagerAddFile([FromForm] AddPostFileManagerAddFileVM data)
         {
-            var file = new NGen.File
+            var file = new FileManagerFile
             {
                 FolderId = data.Folder,
                 CreatorId = NGate.User.Id,
@@ -59,8 +61,8 @@ namespace Website.Controllers
         [Route("[action]")]
         public async Task<IActionResult> FileManagerGetFilesAndFolders(AddPostFileManagerGetFilesAndFoldersVM? data)
         {
-            var filesQuery = Database.Of<NGen.File>().Table;
-            var foldersQuery = Database.Of<NGen.Folder>().Table;
+            var filesQuery = Database.Of<FileManagerFile>().Table;
+            var foldersQuery = Database.Of<FileManagerFolder>().Table;
 
             if (data.Find.HasValue())
             {
@@ -90,11 +92,29 @@ namespace Website.Controllers
         [Route("[action]/{id}")]
         public async Task<IActionResult> FileManagerDownload(Guid id)
         {
-            var file = await Database.Of<NGen.File>().FirstOrDefaultAsync();
+            var file = await Database.Of<FileManagerFile>().FirstOrDefaultAsync();
             if (file == null)
                 return Ok("not found");
 
             return File(file.Source, file.Type, file.Name);
         }
+    }
+    public class AddPostFileManagerAddNewFolderVM
+    {
+        public string Name { get; set; }
+        public Guid? FatherId { get; set; }
+    }
+
+    public class AddPostFileManagerGetFilesAndFoldersVM
+    {
+        public string? Find { get; set; }
+
+        public Guid? FolderId { get; set; }
+    }
+    public class AddPostFileManagerAddFileVM
+    {
+        public Guid? Folder { get; set; }
+        public string? Name { get; set; }
+        public IFormFile File { get; set; }
     }
 }
