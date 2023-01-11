@@ -3,6 +3,7 @@
     public interface IIndependentModule
     {
         (string name, string content) Controller();
+        (string name, string content) Entity();
         (string name, string content) ReactModule();
         (string name, string content) ReactCssFile();
     }
@@ -44,8 +45,8 @@
         public virtual string GetReactHTML(Type pageType, Type moduleType) => string.Empty;
         
         public virtual string GetReactBeforMethod(Type pageType, Type moduleType) => string.Empty;
-        
-        public abstract string GetReactPage(Type pageType, Type moduleType);
+
+        public virtual string GetReactPage(Type pageType, Type moduleType) => string.Empty;
 
         public virtual (string fileName, string content) GetReactCssFile(Type pageType, Type moduleType)
         {

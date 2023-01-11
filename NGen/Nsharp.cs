@@ -16,16 +16,15 @@ namespace NSharp
             await React.ClearAppJsImport();
             await React.ClearAppJsRoutes();
             React.ClearModulesFolder();
-
             React.ClearPagesDirectory();
             Controller.CleanPagesDirectory();
+            NCommon.DomainBasePath.SubDirectory("GenEntities").CleanDirectory();
 
             await GetEnumerableOfType<NPag, T>();
 
             await GetEnumerableOfTypeTwo<MenuModule, T>();
 
             GetEnumerableOfTypeThree<Page, T>();
-
 
 
             var assembliesFiles = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory);
@@ -54,6 +53,11 @@ namespace NSharp
                         var ReactCssFile = independentModule.ReactCssFile();
                         if (ReactCssFile.name.HasValue())
                             NCommon.ReactPagesBaseDirectory.EnsureExsit().SubDirectory("IndependentModules").EnsureExsit().WriteFile(ReactCssFile.name, ReactCssFile.content);
+                        
+                        var independentEntity = independentModule.Entity();
+                        if (independentEntity.name.HasValue())
+                            NCommon.ReactPagesBaseDirectory.EnsureExsit().SubDirectory("GenEntities").EnsureExsit().WriteFile(independentEntity.name, independentEntity.content);
+
 
 
                     }

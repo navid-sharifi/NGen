@@ -11,11 +11,15 @@
 
 	<ItemGroup>
 		<Compile Remove="FileManager\Controller.cs" />
+		<Compile Remove="FileManager\Entity.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="FileManager\Controller.cs">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="FileManager\Entity.cs">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 

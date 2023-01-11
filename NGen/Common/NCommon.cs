@@ -14,6 +14,11 @@ namespace NSharp
             get => NPath.GetCurrentDirectory().UpDirectory().SubDirectory("Website");
         }
       
+        public static NPath DomainBasePath
+        {
+            get => NPath.GetCurrentDirectory().UpDirectory().SubDirectory("Domain");
+        }
+      
         private static NPath BaseDirectory
         {
             get => NPath.GetBaseDirectory();

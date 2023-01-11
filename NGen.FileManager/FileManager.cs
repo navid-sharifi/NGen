@@ -11,10 +11,10 @@ namespace NGen
             return ("FileManager.cs", content);
         }
 
-        public override string GetReactPage(Type pageType, Type moduleType)
+        public (string name, string content) Entity()
         {
-            return @$"";
-
+            var content = NPath.GetBaseDirectory().SubDirectory("FileManager").ReadFile("Entity.cs");
+            return ("FileManager.cs", content);
         }
 
         public (string name, string content) ReactCssFile()
