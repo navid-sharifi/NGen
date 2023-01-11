@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using NGen;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace NSharp
 {
