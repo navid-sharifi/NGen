@@ -20,7 +20,7 @@
             return base.OnSaving();
         }
 
-        [BindProperty]
+        
         public byte[] Source { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
