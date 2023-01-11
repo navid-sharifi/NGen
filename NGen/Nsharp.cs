@@ -18,7 +18,8 @@ namespace NSharp
             React.ClearModulesFolder();
             React.ClearPagesDirectory();
             Controller.CleanPagesDirectory();
-            NCommon.DomainBasePath.SubDirectory("GenEntities").CleanDirectory();
+            var dfd = NCommon.DomainBasePath.SubDirectory("GenEntities");
+            NCommon.DomainBasePath.SubDirectory("GenEntities").EnsureExsit().CleanDirectory();
 
             await GetEnumerableOfType<NPag, T>();
 
@@ -56,7 +57,7 @@ namespace NSharp
                         
                         var independentEntity = independentModule.Entity();
                         if (independentEntity.name.HasValue())
-                            NCommon.ReactPagesBaseDirectory.EnsureExsit().SubDirectory("GenEntities").EnsureExsit().WriteFile(independentEntity.name, independentEntity.content);
+                            NCommon.DomainBasePath.EnsureExsit().SubDirectory("GenEntities").EnsureExsit().WriteFile(independentEntity.name, independentEntity.content);
 
 
 
