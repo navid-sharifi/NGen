@@ -159,9 +159,9 @@ export default {GetReactModuleName(pageType, moduleType)};";
 	public class FormModuleField
 	{
 		internal string _name = string.Empty;
-		private string _type = string.Empty;
-		Type PropertyType;
-		IEnumerable<CustomAttributeData> Attributes;
+        internal string _type = string.Empty;
+		internal Type PropertyType;
+		internal IEnumerable<CustomAttributeData> Attributes;
 
 		public FormModuleField(string name, string type, Type propertyType, IEnumerable<CustomAttributeData> attributes)
 		{

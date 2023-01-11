@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using NGen;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace NSharp
 {
     public static class Extentions
     {
         public static string Join(this IEnumerable<string> @this , char seprator) => string.Join(seprator, @this);
+
         public static string Join(this IEnumerable<string> @this , string seprator) => string.Join(seprator, @this);
 
         public static bool HasValue(this Guid? @this)
