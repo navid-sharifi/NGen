@@ -5,7 +5,8 @@ using NGen;
 
 namespace Website.Controllers
 {
-    public partial class PublicController : SharedController
+    
+    public partial class FileManagerController : SharedController
     {
         [HttpGet]
         [Route("download/{random}/{id}")]
@@ -17,9 +18,9 @@ namespace Website.Controllers
 
             return File(file.Source, file.Type, file.Name);
         }
-
+        [Gate]
         [HttpPost]
-        [Route("[action]")]
+        [Route("AddFolder")]
         public async Task<IActionResult> FileManagerAddFolder(AddPostFileManagerAddNewFolderVM data)
         {
             var alreadyFolderExist = await Database.Of<FileManagerFolder>().Table.AnyAsync(c => c.Name == data.Name.Trim());
@@ -38,9 +39,9 @@ namespace Website.Controllers
             return Ok();
         }
 
-
+        [Gate]
         [HttpPost]
-        [Route("[action]")]
+        [Route("AddFile")]
         public async Task<IActionResult> FileManagerAddFile([FromForm] AddPostFileManagerAddFileVM data)
         {
             var file = new FileManagerFile
@@ -56,9 +57,9 @@ namespace Website.Controllers
             return Ok();
         }
 
-
+        [Gate]
         [HttpPost]
-        [Route("[action]")]
+        [Route("GetFilesAndFolders")]
         public async Task<IActionResult> FileManagerGetFilesAndFolders(AddPostFileManagerGetFilesAndFoldersVM? data)
         {
             var filesQuery = Database.Of<FileManagerFile>().Table;
@@ -87,17 +88,6 @@ namespace Website.Controllers
             return Ok(folders.Select(c => new { type = "folder", name = c.Name, id = c.Id, fatherId = c.FatherId?.ToString(), random = Guid.Empty }).Append(files.Select(c => new { type = "file", name = c.Name, id = c.Id, fatherId = "", random = c.RandomPath })));
         }
 
-
-        [HttpPost]
-        [Route("[action]/{id}")]
-        public async Task<IActionResult> FileManagerDownload(Guid id)
-        {
-            var file = await Database.Of<FileManagerFile>().FirstOrDefaultAsync();
-            if (file == null)
-                return Ok("not found");
-
-            return File(file.Source, file.Type, file.Name);
-        }
     }
     public class AddPostFileManagerAddNewFolderVM
     {

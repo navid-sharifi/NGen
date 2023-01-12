@@ -1,12 +1,29 @@
 ﻿import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { NPostData } from "../../../Tools/Extentions";
+import { NPostData } from "../../Tools/Extentions";
 import "./FileManagerModule.scss";
 
-export default function FileManagerModule() {
+const FileManagerModule = ({ onChange, value, ClassName, placeholder })=> {
+
+
     const [modalShow, setModalShow] = React.useState(false);
-    return (
+     return (<>
+         <div class="input-group" onClick={() => setModalShow(true)} >
+             <div class="input-group-prepend">
+                 <div class="input-group-text">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="25" viewBox="0 0 50 50">
+                         <path d="M0 4L0 46L50 46L50 4 Z M 5 9L45 9L45 41L5 41 Z M 33 15C30.792969 15 29 16.792969 29 19C29 21.207031 30.792969 23 33 23C35.207031 23 37 21.207031 37 19C37 16.792969 35.207031 15 33 15 Z M 17.03125 16C16.726563 15.992188 16.449219 16.109375 16.25 16.34375L7 27.15625L7 39L43 39L43 29.125L35.375 26.0625C35.113281 25.957031 34.820313 25.96875 34.5625 26.09375L27.3125 29.71875L17.8125 16.40625C17.632813 16.15625 17.339844 16.015625 17.03125 16Z" fill="#5B5B5B" />
+                     </svg>
+                 </div>
+             </div>
+             <input
+                 onChange={onChange}
+                 value={value}
+                 className={ClassName}
+                 placeholder={placeholder} />
+         </div>
+         
         <div className="filemanager-module">
             <button className="btn p-0" onClick={() => setModalShow((c) => !c)}
                 style={{
@@ -21,9 +38,13 @@ export default function FileManagerModule() {
             </button>
 
             <MyVerticallyCenteredModal show={modalShow} onHide={() => setModalShow(false)} />
-        </div>
+         </div>
+         </>
     );
 };
+
+export default FileManagerModule;
+
 
 function MyVerticallyCenteredModal(props) {
     const [AddFolderForm, SetAddFolderForm] = React.useState(false);
@@ -45,7 +66,7 @@ function MyVerticallyCenteredModal(props) {
         if (folderid) {
             data["FolderId"] = folderid;
         }
-        NPostData("/AddPost/FileManagerGetFilesAndFolders", data).then((rows) => {
+        NPostData("/FileManager/GetFilesAndFolders", data).then((rows) => {
             setRow(rows);
         });
     };
@@ -56,7 +77,7 @@ function MyVerticallyCenteredModal(props) {
         if (CurrentFolder) {
             data["FatherId"] = CurrentFolder;
         }
-        NPostData("/AddPost/FileManagerAddFolder", data).then((r) => {
+        NPostData("/FileManager/AddFolder", data).then((r) => {
             console.log(r);
             SetFolderName("");
             SetAddFolderForm(false);
@@ -75,7 +96,7 @@ function MyVerticallyCenteredModal(props) {
             data.append("Name", FileName);
         }
 
-        NPostData("/AddPost/FileManagerAddFile", data, {
+        NPostData("/FileManager/AddFile", data, {
             "Content-Type": "multipart/form-data",
         }).then((r) => {
             SetFileName("");
@@ -254,7 +275,7 @@ const RowFile = ({ data }) => {
                         <Button className="m-1">delete</Button>
                         <Button
                             className="m-1"
-                            href={`/download/${data.random}/${data.id}`}
+                            href={`/FileManager/download/${data.random}/${data.id}`}
                         >
                             download
                         </Button>
