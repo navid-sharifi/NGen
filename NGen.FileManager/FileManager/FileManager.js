@@ -4,8 +4,13 @@ import Modal from "react-bootstrap/Modal";
 import { NPostData } from "../../Tools/Extentions";
 import "./FileManagerModule.scss";
 
-const FileManagerModule = ({ onChange, value, ClassName, placeholder })=> {
+const FileManagerModule = ({ onChange, value, ClassName, placeholder, formName, setForm })=> {
 
+    const SelectFileId = (id) => {
+
+        setModalShow(false);
+        setForm((f) => { return { ...f, [formName]: id }; });
+    }
 
     const [modalShow, setModalShow] = React.useState(false);
      return (<>
@@ -37,7 +42,7 @@ const FileManagerModule = ({ onChange, value, ClassName, placeholder })=> {
                 <svg fill="#ffae00" viewBox="-1 0 19 19" xmlns="http://www.w3.org/2000/svg" class="cf-icon-svg" stroke="#ffae00"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_iconCarrier"><path d="M16.417 9.579A7.917 7.917 0 1 1 8.5 1.662a7.917 7.917 0 0 1 7.917 7.917zm-3.439-3.072H7.752l-.436-.852a.57.57 0 0 0-.461-.282H4.038a.318.318 0 0 0-.317.317v7.438a.318.318 0 0 0 .317.316h8.94a.317.317 0 0 0 .317-.316V6.824a.317.317 0 0 0-.317-.317z"></path></g></svg>
             </button>
 
-            <MyVerticallyCenteredModal show={modalShow} onHide={() => setModalShow(false)} />
+             <MyVerticallyCenteredModal show={modalShow} onHide={() => setModalShow(false)} SelectFileId={SelectFileId} />
          </div>
          </>
     );
@@ -55,6 +60,8 @@ function MyVerticallyCenteredModal(props) {
     const [Row, setRow] = React.useState([]);
     const [CurrentFolder, SetCurrentFolder] = React.useState("");
     const [UpIds, setUpId] = React.useState([]);
+
+    var { SelectFileId } = props;
 
     React.useEffect(() => {
         UpdateRows("", CurrentFolder);
@@ -235,7 +242,7 @@ function MyVerticallyCenteredModal(props) {
                     ? Row.map((k, i) => {
                         switch (k.type) {
                             case "file":
-                                return <RowFile data={k} />;
+                                return <RowFile data={k} SelectFileId={SelectFileId} />;
                             case "folder":
                                 return (
                                     <RowFolder
@@ -257,7 +264,7 @@ function MyVerticallyCenteredModal(props) {
 
 const rowStyle = { display: "grid", grid: "100% 10px / 35px auto" };
 
-const RowFile = ({ data }) => {
+const RowFile = ({ data, SelectFileId }) => {
     const [Option, SetOption] = React.useState(false);
     return (
         <div
@@ -271,15 +278,15 @@ const RowFile = ({ data }) => {
             {Option ? (
                 <div>
                     <div style={{ zoom: 0.8, textAlign: "right" }}>
-                        <Button className="m-1">rename</Button>
-                        <Button className="m-1">delete</Button>
+                        {/*<Button className="m-1">rename</Button>*/}
+                        {/*<Button className="m-1">delete</Button>*/}
                         <Button
                             className="m-1"
                             href={`/FileManager/download/${data.random}/${data.id}`}
                         >
                             download
                         </Button>
-                        <Button className="m-1">Copy Adress</Button>
+                        <Button className="m-1" onClick={() => SelectFileId(data.id)}>Select</Button>
                     </div>
                 </div>
             ) : null}
@@ -311,9 +318,9 @@ const RowFolder = ({ data, SetCurrentFolder, setUpId }) => {
                         >
                             Open
                         </Button>
-                        <Button className="m-1">delete</Button>
-                        <Button className="m-1">download</Button>
-                        <Button className="m-1">Copy Adress</Button>
+                        {/*<Button className="m-1">delete</Button>*/}
+                        {/*<Button className="m-1">download</Button>*/}
+                        {/*<Button className="m-1">Copy Adress</Button>*/}
                     </div>
                 </div>
             ) : null}

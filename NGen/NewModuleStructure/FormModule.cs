@@ -347,17 +347,17 @@ export default {GetReactModuleName(pageType, moduleType)};";
 
             if (_save)
             {
-                html += $"<button type=\"button\" class=\"btn btn-{_class.PlaceIf(_class.None(), "primary")}\" " +
+                html += $"<button type=\"button\" class=\"btn btn-{_class.PlaceIf(_class.HasValue(), "primary")}\" " +
                 $"{$"onClick={{(e)=> {Name()}(e)}}"}>{_name}</button>";
             }
             else if (_onClick)
             {
-                html += $"<button type=\"button\" class=\"btn btn-{_class.PlaceIf(_class.None(), "primary")}\" " +
+                html += $"<button type=\"button\" class=\"btn btn-{_class.PlaceIf(_class.HasValue(), "primary")}\" " +
                 $"{$"onClick={{(e)=> {Name()}(e)}}"}>{_name}</button>";
             }
             else if (_route.HasValue())
             {
-                html += $"<button type=\"button\" class=\"btn btn-{_class.PlaceIf(_class.None(), "primary")}\"{$" onClick={{()=>navigate(`{_route}`)}}"} " +
+                html += $"<button type=\"button\" class=\"btn btn-{_class.PlaceIf(_class.HasValue(), "primary")}\"{$" onClick={{()=>navigate(`{_route}`)}}"} " +
                $">{_name}</button>";
             }
 
@@ -479,7 +479,7 @@ export default {GetReactModuleName(pageType, moduleType)};";
 
         public FormModuleButton AddClass(string @class)
         {
-            _class = @class;
+            _class += @class;
             return this;
         }
 

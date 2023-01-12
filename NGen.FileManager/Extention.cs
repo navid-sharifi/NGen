@@ -11,6 +11,8 @@
      
     <FileManagerModule
             onChange={{(e) => SetForm( (f) =>{{return {{...f, ['{@this._name.FirstCharToLower()}']: e.target.value}}; }}) }}
+            formName={{'{@this._name.FirstCharToLower()}'}}
+            setForm={{SetForm}}
             value={{form.{@this._name.FirstCharToLower()}}}
             ClassName={{""form-control""}}
             placeholder={{'{@this._name}'}}
